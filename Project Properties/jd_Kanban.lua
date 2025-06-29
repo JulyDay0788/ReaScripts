@@ -114,7 +114,7 @@ end
 local ext_name = "Kanban"
 local window_w, window_h = 1280, 900
 ----- NEW START -------------------------
--- fall back on the user screen resolution if smaller than the default values
+-- fall back on the user screen resolution if different from the default values
 local lt, top, rt, bot = reaper.my_getViewport(0, 0, 0, 0, 0, 0, 0, 0, false) -- false - work area, false - the entire screen // https://forum.cockos.com/showthread.php?t=195629#4
 local max_w, max_h = rt-lt, bot-top -- bot and top seem to be reversed on Mac
 local window_w, window_h = math.min(window_w, max_w), math.min(window_h, max_h)
