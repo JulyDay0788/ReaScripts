@@ -480,7 +480,7 @@ local env_var = Win and 'USERPROFILE' or 'HOME'
 local path = #proj_path > 0 and proj_path:match('.+[\\/]') or os.getenv(env_var) -- fall back on Desktop path is no saved project
 local sep = path:match('[\\/]')
 local file = io.open(path..sep..(#proj_path > 0 and '' or 'Desktop'..sep)..'Kanban tasks.txt', "w")
---debug_message(path)
+
 	if not file then
 	  reaper.ShowMessageBox("Failed to open file for tasks export", "Error", 0)
 	  return
@@ -719,17 +719,13 @@ function restore_commas(text)
 end
 ]]
 function task_dialogue(col, default_text, want_new_task, err) ---- NEW
-debug_message('cont='..default_text)
 local default_text = want_new_task and not err and default_text:gsub('\t','') or default_text
 local field_cnt = col == 1 and 1 or 3
 local cur_year, cur_month, cur_day, cur_hour, cur_min = os.date('%Y'), os.date('%m'), os.date('%d'), os.date('%H'), os.date('%M')
 local field_label = 'Task name:'
 local field_labels = col == 1 and field_label or col == 2 and field_label..',Date (dd/mm/yyyy):,Time (hh:mm):'
 or field_label..',Date:,Time:'
-local field_cont = col == 1 and default_text -- in column BACKLOG load stored text if exists or from the clipboard when creating new task
-or col > 1 and (want_new_task and not err and default_text..'\t'..cur_day..'/'..cur_month..'/'..cur_year..'\t'..cur_hour..':'..cur_min
-or default_text) -- in columns TO DO and DONE only load current time stamp when creating a new task, otherwise load stored content
-or ''
+local field_cont = default_text
 
 local col_type = col == 1 and 'Backlog' or col == 2 and 'To Do' or 'Done'
 local title = col > 1 and '  [date and time are optional]' or ''
