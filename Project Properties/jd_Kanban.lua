@@ -723,13 +723,20 @@ local default_text = want_new_task and not err and default_text:gsub('\t','') or
 local field_cnt = col == 1 and 1 or 3
 local cur_year, cur_month, cur_day, cur_hour, cur_min = os.date('%Y'), os.date('%m'), os.date('%d'), os.date('%H'), os.date('%M')
 local field_label = 'Task name:'
-local field_labels = col == 1 and field_label or col == 2 and field_label..',Date (dd/mm/yyyy):,Time (hh:mm):'
+local field_labels = col == 1 and field_label or col > 1 and field_label..',Date (dd/mm/yyyy):,Time (hh:mm):'
 or field_label..',Date:,Time:'
-local field_cont = default_text
-
+--[[ version with time stamp auto-fill
+local field_cont = col == 1 and default_text -- in column BACKLOG load stored text if exists or from the clipboard when creating new task
+or col > 1 and (want_new_task and not err and default_text..'\t'..cur_day..'/'..cur_month..'/'..cur_year..'\t'..cur_hour..':'..cur_min
+or default_text) -- in columns TO DO and DONE only load current time stamp when creating a new task, otherwise load stored content
+or ''
+--]]
+local field_cont = default_text)
+	
 local col_type = col == 1 and 'Backlog' or col == 2 and 'To Do' or 'Done'
 local title = col > 1 and '  [date and time are optional]' or ''
-local retval, task_text = reaper.GetUserInputs("New \""..col_type.."\" Task"..title, field_cnt, field_labels..",extrawidth=400,separator=\t", field_cont)
+title = (want_new_task and 'New "' or '"')..col_type..'" Task'..title
+local retval, task_text = reaper.GetUserInputs(title, field_cnt, field_labels..",extrawidth=400,separator=\t", field_cont)
 	if not retval then return end
 local task_txt, date, time = task_text:match('^(.-)\t') or task_text, task_text:match('\t(.*)\t'), task_text:match('\t.-\t(.*)')
 	if #task_txt > 0 and col > 1 and want_new_task then -- only validate date and time when creating a new task under TO DO and DONE columns
